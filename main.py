@@ -5,7 +5,7 @@ from math import nan
 import pandas as pd
 import sys
 from datetime import datetime, date
-from enum import Enum, unique
+from enum import IntEnum, unique
 pyautogui.PAUSE = 2.5
 
 has_signed_in = False
@@ -13,7 +13,7 @@ has_signed_in = False
 # program assumes no passcode
 
 @unique
-class WeekDays(Enum):
+class WeekDays(IntEnum):
     Monday = 0
     Tuesday = 1
     Wednesday = 2
@@ -80,7 +80,14 @@ def validate_signin(meeting_id, pswd='') -> None:
 
 # Reading the file
 df = pd.read_csv(r'timings.csv')
+# print(df.loc[1]['timings'])
 
+# df.head() gets the first n rows, with n=5 as default
+# loc slicing is inclusive, iloc is not
+# loc uses label names as index values and iloc uses integers
+# df.iloc[x] gets the xth row (vertical display)
+# df.iloc[[x]] gets the xth row (horizontal display)
+# df.iat[3, 0] similar to iloc but I think it's faster, but only limited to getting one value though
 # df.loc[x] gets the xth row
 # df['x'] gets all the rows at column named 'x'
 # len(df.columns) gets total number of columns
@@ -92,9 +99,7 @@ df = pd.read_csv(r'timings.csv')
 
 # mondays and wednesdays
 # print(df.loc[1]['meetingid']) # machine learning
-print(df.loc[3]['meetingid'])
-
-
+# print(df.loc[3]['meetingid'])
 # print(df.shape)
 
 
@@ -104,9 +109,9 @@ while not has_signed_in:
     # checking of the current time exists in our csv file
     # per while loop iteration
     now = datetime.now().strftime("%H:%M")
+    # print(now)
 
     if (date.today().weekday() == WeekDays.Monday or date.today().weekday() == WeekDays.Wednesday):
-
         # cap 5610
         if now in df.loc[1]['timings']:
             validate_signin(df.loc[1]['meetingid'])
@@ -116,7 +121,6 @@ while not has_signed_in:
             validate_signin(df.loc[3]['meetingid'])
 
     elif date.today().weekday() == WeekDays.Tuesday or date.today().weekday() == WeekDays.Thursday:
-
         # cot 5405
         if now in df.loc[0]['timings']:
             validate_signin(df.loc[0]['meetingid'])
