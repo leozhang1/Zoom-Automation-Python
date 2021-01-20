@@ -5,11 +5,20 @@ from math import nan
 import pandas as pd
 import sys
 from datetime import datetime, date
+from enum import Enum, unique
 pyautogui.PAUSE = 2.5
 
 has_signed_in = False
 
 # program assumes no passcode
+
+@unique
+class WeekDays(Enum):
+    Monday = 0
+    Tuesday = 1
+    Wednesday = 2
+    Thursday = 3
+    Friday = 4
 
 
 def sign_in(meetingid, pswd=''):
@@ -51,19 +60,15 @@ def sign_in(meetingid, pswd=''):
     pyautogui.moveTo(join_btn)
     pyautogui.click()
 
+    # Types the password (if there is one) and hits enter
+    if len(pswd) > 0:
+        meeting_pswd_btn = pyautogui.locateCenterOnScreen('meeting_pswd.png')
+        pyautogui.moveTo(meeting_pswd_btn)
+        pyautogui.click()
+        pyautogui.write(pswd)
+        pyautogui.press('enter')
+
     has_signed_in = True
-
-    # sleep(5)
-
-    # Types the password and hits enter
-    # try:
-    #     meeting_pswd_btn = pyautogui.locateCenterOnScreen('meeting_pswd.png')
-    #     pyautogui.moveTo(meeting_pswd_btn)
-    #     pyautogui.click()
-    #     pyautogui.write(pswd)
-    #     pyautogui.press('enter')
-    # except Exception:
-    #     pswd = ''
 
 
 # pass in the proper meeting id based on week day
@@ -87,7 +92,7 @@ df = pd.read_csv(r'timings.csv')
 
 # mondays and wednesdays
 # print(df.loc[1]['meetingid']) # machine learning
-# print(df.loc[3]['meetingid']) # parallel programming
+print(df.loc[3]['meetingid'])
 
 
 # print(df.shape)
@@ -100,8 +105,7 @@ while not has_signed_in:
     # per while loop iteration
     now = datetime.now().strftime("%H:%M")
 
-    # mondays and wednesdays
-    if (date.today().weekday() == 0 or date.today().weekday() == 2):
+    if (date.today().weekday() == WeekDays.Monday or date.today().weekday() == WeekDays.Wednesday):
 
         # cap 5610
         if now in df.loc[1]['timings']:
@@ -111,7 +115,7 @@ while not has_signed_in:
         elif now in df.loc[3]['timings']:
             validate_signin(df.loc[3]['meetingid'])
 
-    elif date.today().weekday() == 1 or date.today().weekday() == 3:
+    elif date.today().weekday() == WeekDays.Tuesday or date.today().weekday() == WeekDays.Thursday:
 
         # cot 5405
         if now in df.loc[0]['timings']:
