@@ -3,25 +3,28 @@ import pyautogui
 from time import sleep
 from math import nan
 import pandas as pd
-from datetime import datetime
+import sys
+from datetime import datetime, date
 pyautogui.PAUSE = 2.5
 
 has_signed_in = False
 
 # program assumes no passcode
+
+
 def sign_in(meetingid, pswd=''):
-    #Opens up the zoom app
-    #change the path specific to your computer
+    # Opens up the zoom app
+    # change the path specific to your computer
 
-    #If on windows use below line for opening zoom
-    #subprocess.call('C:\\myprogram.exe')
+    # If on windows use below line for opening zoom
+    # subprocess.call('C:\\myprogram.exe')
 
-    #If on mac / Linux use below line for opening zoom
+    # If on mac / Linux use below line for opening zoom
     subprocess.call(r'C:\Users\Leo Zhang\AppData\Roaming\Zoom\bin\Zoom.exe')
 
     sleep(5)
 
-    #clicks the join button
+    # clicks the join button
     join_btn = pyautogui.locateCenterOnScreen('join_button.png')
     pyautogui.moveTo(join_btn)
     pyautogui.click()
@@ -31,7 +34,7 @@ def sign_in(meetingid, pswd=''):
 
     # Type the meeting ID
     # meeting_id_btn =  pyautogui.locateCenterOnScreen('meeting_id_button.png')
-    meeting_id_btn =  pyautogui.locateCenterOnScreen('meeting_id_button.png')
+    meeting_id_btn = pyautogui.locateCenterOnScreen('meeting_id_button.png')
     pyautogui.moveTo(meeting_id_btn)
     pyautogui.click()
     pyautogui.write(meetingid)
@@ -52,7 +55,7 @@ def sign_in(meetingid, pswd=''):
 
     # sleep(5)
 
-    #Types the password and hits enter
+    # Types the password and hits enter
     # try:
     #     meeting_pswd_btn = pyautogui.locateCenterOnScreen('meeting_pswd.png')
     #     pyautogui.moveTo(meeting_pswd_btn)
@@ -62,29 +65,62 @@ def sign_in(meetingid, pswd=''):
     # except Exception:
     #     pswd = ''
 
+
+# pass in the proper meeting id based on week day
+def validate_signin(meeting_id, pswd='') -> None:
+    sign_in(str(meeting_id), str(pswd))
+    sleep(30)
+    print('signed in')
+
+
 # Reading the file
-# df = pd.read_csv('timings.csv')
+df = pd.read_csv(r'timings.csv')
+
+# df.loc[x] gets the xth row
+# df['x'] gets all the rows at column named 'x'
+# len(df.columns) gets total number of columns
+# len(df.index) gets total number of rows
+
+# tuesdays and thursdays
+# print(df.loc[0]['meetingid']) # cot 5405
+# print(df.loc[2]['meetingid']) # cda 5106
+
+# mondays and wednesdays
+# print(df.loc[1]['meetingid']) # machine learning
+# print(df.loc[3]['meetingid']) # parallel programming
 
 
-# while not has_signed_in:
+# print(df.shape)
 
-#     # checking of the current time exists in our csv file
-#     # per while loop iteration
-#     now = datetime.now().strftime("%H:%M")
-#     # print(now)
-#     if datetime.now().hour == 0:
-#         now = '12:'+ now[3:]
-#     if now in str(df['timings']):
-#        row = df.loc[df['timings'] == now]
-#        m_id = str(row.iloc[0,1])
-#     #    print('m_id: {}'.format(m_id))
-#        m_pswd = str(row.iloc[0,2])
-#     #    print('m_pswd: {}'.format(m_pswd))
-#     #    print(m_pswd == nan)
 
-    #    sign_in(m_id, '')
-    #    sleep(30)
-    #    print('signed in')
+# toggle the meeting id based on weekday
+while not has_signed_in:
+
+    # checking of the current time exists in our csv file
+    # per while loop iteration
+    now = datetime.now().strftime("%H:%M")
+
+    # mondays and wednesdays
+    if (date.today().weekday() == 0 or date.today().weekday() == 2):
+
+        # cap 5610
+        if now in df.loc[1]['timings']:
+            validate_signin(df.loc[1]['meetingid'])
+
+        # cop 4520
+        elif now in df.loc[3]['timings']:
+            validate_signin(df.loc[3]['meetingid'])
+
+    elif date.today().weekday() == 1 or date.today().weekday() == 3:
+
+        # cot 5405
+        if now in df.loc[0]['timings']:
+            validate_signin(df.loc[0]['meetingid'])
+
+        # CDA 5106
+        elif now in df.loc[2]['timings']:
+            validate_signin(df.loc[2]['meetingid'], df.loc[2]['meetingpswd'])
+
 
 
 # COT 5405
@@ -98,3 +134,19 @@ def sign_in(meetingid, pswd=''):
 
 # COP 4520
 # sign_in('95528809821')
+
+# now = datetime.now().strftime("%H:%M")
+#     # print(now)
+#     if datetime.now().hour == 0:
+#         now = '12:'+ now[3:]
+
+#     if now in str(df['timings']):
+
+#         row = df.loc[df['timings'] == now]
+#         m_id = str(row.iloc[0,1])
+#         m_pswd = str(row.iloc[0,2])
+
+
+#         sign_in(m_id, '')
+#         sleep(30)
+#         print('signed in')
