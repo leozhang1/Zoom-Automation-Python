@@ -10,8 +10,6 @@ pyautogui.PAUSE = 2.5
 
 has_signed_in = False
 
-# program assumes no passcode
-
 @unique
 class WeekDays(IntEnum):
     Monday = 0
@@ -80,7 +78,8 @@ def validate_signin(meeting_id, pswd='') -> None:
 
 # Reading the file
 df = pd.read_csv(r'timings.csv')
-# print(df.loc[1]['timings'])
+# print(df.loc[4]['timings'])
+print(df.loc[4]['meetingid'])
 
 # df.head() gets the first n rows, with n=5 as default
 # loc slicing is inclusive, iloc is not
@@ -128,6 +127,12 @@ while not has_signed_in:
         # CDA 5106
         elif now in df.loc[2]['timings']:
             validate_signin(df.loc[2]['meetingid'], df.loc[2]['meetingpswd'])
+
+    elif date.today().weekday() == WeekDays.Friday:
+
+        if now in df.loc[4]['timings']:
+            validate_signin(df.loc[4]['meetingid'])
+
 
 
 
