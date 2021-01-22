@@ -66,6 +66,7 @@ def sign_in(meetingid, pswd=''):
         pyautogui.write(pswd)
         pyautogui.press('enter')
 
+    global has_signed_in
     has_signed_in = True
 
 
@@ -79,7 +80,7 @@ def validate_signin(meeting_id, pswd='') -> None:
 # Reading the file
 df = pd.read_csv(r'timings.csv')
 # print(df.loc[4]['timings'])
-print(df.loc[4]['meetingid'])
+# print(df.loc[4]['meetingid'])
 
 # df.head() gets the first n rows, with n=5 as default
 # loc slicing is inclusive, iloc is not
@@ -126,6 +127,7 @@ while not has_signed_in:
 
         # CDA 5106
         elif now in df.loc[2]['timings']:
+            print('signing in with meeting id: {}'.format(df.loc[2]['meetingid']))
             validate_signin(df.loc[2]['meetingid'], df.loc[2]['meetingpswd'])
 
     elif date.today().weekday() == WeekDays.Friday:
