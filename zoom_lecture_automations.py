@@ -10,6 +10,8 @@ pyautogui.PAUSE = 2.5
 
 has_signed_in = False
 
+
+
 @unique
 class WeekDays(IntEnum):
     Monday = 0
@@ -81,6 +83,7 @@ def validate_signin(meeting_id, pswd='') -> None:
 df = pd.read_csv(r'timings.csv')
 # print(df.loc[4]['timings'])
 # print(df.loc[4]['meetingid'])
+# print(df)
 
 # df.head() gets the first n rows, with n=5 as default
 # loc slicing is inclusive, iloc is not
@@ -102,6 +105,8 @@ df = pd.read_csv(r'timings.csv')
 # print(df.loc[3]['meetingid'])
 # print(df.shape)
 
+# test signing in (MAKE SURE TO MARK THE WHILE LOOP FLAG AS TRUE SO WE DONT TRIGGER IT)
+# sign_in('96224823859', pswd='d251b2Z1L3paYi9vNTRCSWtsY3ordz09')
 
 # toggle the meeting id based on weekday
 while not has_signed_in:
@@ -119,6 +124,16 @@ while not has_signed_in:
         # cop 4520
         elif now in df.loc[3]['timings']:
             validate_signin(df.loc[3]['meetingid'])
+
+        # cot 5405 TA office hour (wednesdays from 7pm-8pm)
+        if (date.today().weekday() == WeekDays.Monday):
+            if now in df.loc[5]['timings']:
+                validate_signin(df.loc[3]['meetingid'], df.loc[3]['meetingpswd'])
+
+        # cot 5405 professor office hours (mondays from 7pm-8pm)
+        if (date.today().weekday() == WeekDays.Monday):
+            if now in df.loc[6]['timings']:
+                validate_signin(df.loc[3]['meetingid'])
 
     elif date.today().weekday() == WeekDays.Tuesday or date.today().weekday() == WeekDays.Thursday:
         # cot 5405
